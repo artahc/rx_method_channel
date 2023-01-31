@@ -46,6 +46,15 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
     return Random().nextInt(1000000);
   }
 
+  void _cancelOperation(int requestId) {
+    _channel.invokeMethod(
+      Action.cancel.name,
+      {
+        "requestId": requestId,
+      },
+    );
+  }
+
   @override
   CancelableOperation<void> executeCompletable({
     required String methodName,
@@ -63,7 +72,7 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
         },
       ),
       onCancel: () {
-        _channel.invokeMethod(Action.cancel.name, requestId);
+        _cancelOperation(requestId);
       },
     );
   }
@@ -85,12 +94,7 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
         },
       ),
       onCancel: () {
-        _channel.invokeMethod(
-          Action.cancel.name,
-          {
-            "requestId": requestId,
-          },
-        );
+        _cancelOperation(requestId);
       },
     );
   }
@@ -135,12 +139,7 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
         },
       );
     }).doOnCancel(() async {
-      _channel.invokeMethod(
-        Action.cancel.name,
-        {
-          "requestId": requestId,
-        },
-      );
+      _cancelOperation(requestId);
     });
   }
 
