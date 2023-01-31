@@ -1,0 +1,41 @@
+PODS:
+  - Flutter (1.0.0)
+  - rx_method_channel (0.0.1):
+    - Flutter
+    - RxCocoa
+    - RxSwift
+  - RxCocoa (6.5.0):
+    - RxRelay (= 6.5.0)
+    - RxSwift (= 6.5.0)
+  - RxRelay (6.5.0):
+    - RxSwift (= 6.5.0)
+  - RxSwift (6.5.0)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - rx_method_channel (from `.symlinks/plugins/rx_method_channel/ios`)
+  - RxCocoa (= 6.5.0)
+  - RxSwift (= 6.5.0)
+
+SPEC REPOS:
+  trunk:
+    - RxCocoa
+    - RxRelay
+    - RxSwift
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  rx_method_channel:
+    :path: ".symlinks/plugins/rx_method_channel/ios"
+
+SPEC CHECKSUMS:
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  rx_method_channel: b7ed365fb3e5350a933359de0f7607f6df641d00
+  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
+  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
+
+PODFILE CHECKSUM: d6313b8e870a1afb25bcc11157659642382b72e1
+
+COCOAPODS: 1.11.3

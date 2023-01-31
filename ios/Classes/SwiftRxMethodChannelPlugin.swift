@@ -2,13 +2,9 @@ import Flutter
 import UIKit
 
 public class SwiftRxMethodChannelPlugin: NSObject, FlutterPlugin {
-  public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "rx_method_channel", binaryMessenger: registrar.messenger())
-    let instance = SwiftRxMethodChannelPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
-
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result("iOS " + UIDevice.current.systemVersion)
-  }
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let instance = SwiftRxMethodChannelPlugin()
+        let channel = FlutterMethodChannel(name: "rx_method_channel", binaryMessenger: registrar.messenger())
+        registrar.addMethodCallDelegate(instance, channel: channel)
+    }
 }
