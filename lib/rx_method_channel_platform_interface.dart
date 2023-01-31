@@ -9,11 +9,11 @@ abstract class RxMethodChannelPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static RxMethodChannelPlatform _instance = MethodChannelRxMethodChannel();
+  static RxMethodChannelPlatform _instance = RxMethodChannelPlatformImpl(channelName: "");
 
   /// The default instance of [RxMethodChannelPlatform] to use.
   ///
-  /// Defaults to [MethodChannelRxMethodChannel].
+  /// Defaults to [RxMethodChannelPlatformImpl].
   static RxMethodChannelPlatform get instance => _instance;
 
   /// Platform-specific implementations should set this with their own
@@ -31,17 +31,21 @@ abstract class RxMethodChannelPlatform extends PlatformInterface {
     throw UnimplementedError();
   }
 
-  CancelableOperation<T> executeSingle<T>({
+  CancelableOperation executeSingle({
     required String methodName,
     Map<String, dynamic> arguments = const {},
   }) {
     throw UnimplementedError();
   }
 
-  Stream<T> executeObservable<T>({
+  Stream executeObservable({
     required String methodName,
     Map<String, dynamic> arguments = const {},
   }) {
+    throw UnimplementedError();
+  }
+
+  void dispose() {
     throw UnimplementedError();
   }
 }

@@ -1,24 +1,44 @@
 import 'package:async/async.dart';
+import 'package:rx_method_channel/rx_method_channel_method_channel.dart';
+
+import 'rx_method_channel_platform_interface.dart';
 
 class RxMethodChannel {
+  final String channelName;
+
+  RxMethodChannel({required this.channelName}) {
+    final methodChannelImpl =
+        RxMethodChannelPlatformImpl(channelName: channelName);
+    RxMethodChannelPlatform.instance = methodChannelImpl;
+  }
+
   CancelableOperation<void> executeCompletable({
     required String methodName,
     Map<String, dynamic> arguments = const {},
   }) {
-    throw UnimplementedError();
+    return RxMethodChannelPlatform.instance.executeCompletable(
+      methodName: methodName,
+      arguments: arguments,
+    );
   }
 
-  CancelableOperation<T> executeSingle<T>({
+  CancelableOperation executeSingle({
     required String methodName,
     Map<String, dynamic> arguments = const {},
   }) {
-    throw UnimplementedError();
+    return RxMethodChannelPlatform.instance.executeSingle(
+      methodName: methodName,
+      arguments: arguments,
+    );
   }
 
-  Stream<T> executeObservable<T>({
+  Stream executeObservable({
     required String methodName,
     Map<String, dynamic> arguments = const {},
   }) {
-    throw UnimplementedError();
+    return RxMethodChannelPlatform.instance.executeObservable(
+      methodName: methodName,
+      arguments: arguments,
+    );
   }
 }

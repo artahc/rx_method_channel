@@ -16,18 +16,62 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _rxMethodChannelPlugin = RxMethodChannel();
+  final plugin = RxMethodChannel(channelName: "test_channel");
+  StreamSubscription? subs;
+  StreamSubscription? subs2;
 
   @override
   void initState() {
     super.initState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> executePlugin() async {
-    await _rxMethodChannelPlugin
-        .executeSingle<String>(methodName: "")
-        .valueOrCancellation(null);
+  Future<void> executeSingle() async {
+    final value = await plugin.executeSingle(
+      methodName: "returnmyint",
+      arguments: {
+        "myInt": 69,
+      },
+    ).valueOrCancellation(null);
+
+    print(value);
+  }
+
+  Future<void> executeObservable() async {
+    subs = plugin.executeObservable(
+      methodName: "observableint",
+      arguments: {
+        "multiplier": 5,
+      },
+    ).listen((event) {
+      print("Received result in Front: $event");
+    }, onError: (e, st) {
+      print(e);
+    });
+  }
+
+  void executePeriodicObservable() async {
+    subs2 = plugin.executeObservable(methodName: "periodicObservable").listen(
+        (event) {
+      print("Received periodic: $event");
+    }, onError: (e, st) {
+      print(e);
+    });
+  }
+
+  void disposePeriodicObservable() {
+    subs2?.cancel();
+  }
+
+  Future<void> executeCompletable() async {
+    await plugin
+        .executeCompletable(
+          methodName: "completable",
+          arguments: {},
+        )
+        .valueOrCancellation(null)
+        .whenComplete(() {
+          print("Completed");
+        });
   }
 
   @override
@@ -37,8 +81,69 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: const Center(
-          child: Text('Running on: \n'),
+        body: Column(
+          children: [
+            MaterialButton(
+              color: Colors.blue,
+              onPressed: () {
+                executeSingle();
+              },
+              child: const Text(
+                "Execute Single",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            MaterialButton(
+              color: Colors.blue,
+              onPressed: () {
+                executeCompletable();
+              },
+              child: const Text(
+                "Execute Completable",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            MaterialButton(
+              color: Colors.blue,
+              onPressed: () {
+                executeObservable();
+              },
+              child: const Text(
+                "Execute Observable",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            MaterialButton(
+              color: Colors.blue,
+              onPressed: () {
+                executePeriodicObservable();
+              },
+              child: const Text(
+                "Execute Periodic Observable",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            MaterialButton(
+              color: Colors.blue,
+              onPressed: () {
+                disposePeriodicObservable();
+              },
+              child: const Text(
+                "Dispose Periodic Observable",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
