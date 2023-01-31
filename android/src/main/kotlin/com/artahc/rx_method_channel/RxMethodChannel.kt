@@ -13,6 +13,8 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 typealias SingleContainer = (Argument) -> Single<*>
+typealias CompletableContainer = (Argument) -> Completable
+typealias ObservableContainer = (Argument) -> Observable<*>
 
 class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
     MethodChannel.MethodCallHandler {
@@ -26,22 +28,22 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
     }
 
     private val registeredSingle = mutableMapOf<String, SingleContainer>()
-    private val registeredObservable = mutableMapOf<String, (Argument) -> Observable<*>>()
-    private val registeredCompletable = mutableMapOf<String, (Argument) -> Completable>()
+    private val registeredObservable = mutableMapOf<String, ObservableContainer>()
+    private val registeredCompletable = mutableMapOf<String, CompletableContainer>()
 
     private val subscriptions = mutableMapOf<Int, Disposable>()
 
-    fun <T> registerSingle(methodName: String, call: (Argument) -> Single<T>) {
+    fun <T> registerSingle(methodName: String, call: SingleContainer) {
         logger.log(Level.INFO, "Registered single: $methodName")
         registeredSingle[methodName] = call
     }
 
-    fun registerCompletable(methodName: String, call: (Argument) -> Completable) {
+    fun registerCompletable(methodName: String, call: CompletableContainer) {
         logger.log(Level.INFO, "Registered completable $methodName")
         registeredCompletable[methodName] = call
     }
 
-    fun <T> registerObservable(methodName: String, call: (Argument) -> Observable<T>) {
+    fun <T> registerObservable(methodName: String, call: ObservableContainer) {
         logger.log(Level.INFO, "Registered observable $methodName")
         registeredObservable[methodName] = call
     }
@@ -165,12 +167,14 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
                                 )
                             })
                     }
-                    else -> throw Exception("Invalid methodType: $methodType")
+                    else -> result.error(
+                        INVALID_OPERATION,
+                        "Invalid method type: $methodType",
+                        null
+                    )
                 }
             }
-            else -> {
-                throw Exception("Unable to find method ${call.method}")
-            }
+            else -> result.error(INVALID_OPERATION, "Invalid operation: ${call.method}", null)
         }
     }
 }
