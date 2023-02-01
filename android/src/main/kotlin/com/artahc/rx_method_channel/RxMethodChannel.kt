@@ -9,12 +9,32 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.util.logging.Level
 import java.util.logging.Logger
 
-typealias SingleContainer = (Argument) -> Single<*>
+typealias SingleContainer = (Argument) -> Single<Any>
 typealias CompletableContainer = (Argument) -> Completable
-typealias ObservableContainer = (Argument) -> Observable<*>
+typealias ObservableContainer = (Argument) -> Observable<Any>
+
+enum class Action(val value: String) {
+
+    Cancel("cancel"), Subscribe("subscribe");
+
+    companion object {
+        private val map = Action.values().associateBy(Action::value)
+        operator fun get(value: String) = map[value]
+    }
+}
+
+enum class MethodType(val value: String) {
+    Single("single"), Completable("completable"), Observable("observable");
+
+    companion object {
+        private val map = MethodType.values().associateBy(MethodType::value)
+        operator fun get(value: String) = map[value]
+    }
+}
 
 class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
     MethodChannel.MethodCallHandler {
@@ -49,7 +69,10 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
     }
 
     private fun removeSubscription(requestId: Int) {
-        logger.log(Level.INFO, "Disposed subscription with requestId: ${subscriptions[requestId]}")
+        logger.log(
+            Level.INFO,
+            "Disposed subscription with requestId: $requestId -> ${subscriptions[requestId]}"
+        )
         subscriptions[requestId]?.dispose()
         subscriptions.remove(requestId)
     }
@@ -60,18 +83,18 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
         val args = call.arguments as HashMap<String, Any>
         val requestId = args["requestId"] as Int
 
-        when (call.method) {
-            "cancel" -> {
+        when (Action[call.method]) {
+            Action.Cancel -> {
                 removeSubscription(requestId)
                 result.success(null)
             }
-            "subscribe" -> {
+            Action.Subscribe -> {
                 val methodName = args["methodName"] as String
-                val methodType = args["methodType"] as String
                 val methodArgument = args["arguments"] as HashMap<String, Any>
+                val rawMethodType = args["methodType"] as String
 
-                when (methodType) {
-                    "single" -> {
+                when (MethodType[rawMethodType]) {
+                    MethodType.Single -> {
                         if (!registeredSingle.containsKey(methodName)) {
                             result.error(
                                 METHOD_NOT_FOUND,
@@ -86,15 +109,13 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
                             .doOnTerminate {
                                 removeSubscription(requestId)
                             }
-                            .subscribeOn(AndroidSchedulers.mainThread())
-                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
                                 result.success(it)
                             }, { error ->
                                 result.error(OPERATION_ERROR, error.localizedMessage, error)
                             })
                     }
-                    "completable" -> {
+                    MethodType.Completable -> {
                         if (!registeredCompletable.containsKey(methodName)) {
                             result.error(
                                 METHOD_NOT_FOUND,
@@ -109,17 +130,15 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
                             .doOnTerminate {
                                 removeSubscription(requestId)
                             }
-                            .subscribeOn(AndroidSchedulers.mainThread())
-                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
                                 logger.log(Level.INFO, "Success: $methodName")
                                 result.success(null)
                             }, { error ->
                                 logger.log(Level.INFO, "Error: $methodName")
-                                result.error(OPERATION_ERROR, null, error)
+                                result.error(OPERATION_ERROR, error.localizedMessage, error)
                             })
                     }
-                    "observable" -> {
+                    MethodType.Observable -> {
                         if (!registeredObservable.containsKey(methodName)) {
                             result.error(
                                 METHOD_NOT_FOUND,
@@ -144,10 +163,7 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
                                     ).toJson()
                                 )
                             }
-                            .subscribeOn(AndroidSchedulers.mainThread())
-                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
-                                logger.log(Level.INFO, "Emitting item $it")
                                 channel.invokeMethod(
                                     "observableCallback",
                                     ObservableCallback(
@@ -167,14 +183,14 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
                                 )
                             })
                     }
-                    else -> result.error(
+                    null -> result.error(
                         INVALID_OPERATION,
-                        "Invalid method type: $methodType",
+                        "Invalid method type: $rawMethodType",
                         null
                     )
                 }
             }
-            else -> result.error(INVALID_OPERATION, "Invalid operation: ${call.method}", null)
+            null -> result.error(INVALID_OPERATION, "Invalid operation: ${call.method}", null)
         }
     }
 }
