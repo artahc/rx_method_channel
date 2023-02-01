@@ -132,6 +132,7 @@ public class RxMethodChannel {
                 
                 let source = registeredObservable[methodName]!
                 subscriptions[requestId] = source(arguments)
+                    .observe(on: MainScheduler.instance)
                     .do(
                         onCompleted: {
                             let payload = ObservableCallback(

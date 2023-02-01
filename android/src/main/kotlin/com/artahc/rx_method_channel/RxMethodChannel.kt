@@ -150,6 +150,7 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
 
                         val source = registeredObservable[methodName]
                         subscriptions[requestId] = source!!.invoke(methodArgument)
+                            .observeOn(AndroidSchedulers.mainThread())
                             .doOnTerminate {
                                 result.success(null)
                             }
