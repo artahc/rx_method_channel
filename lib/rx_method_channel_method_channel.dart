@@ -109,27 +109,6 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
         .where((data) => data.requestId == requestId)
         .map((event) => event.value);
 
-    final commandStream = LazyStream(
-      () {
-        return _channel
-            .invokeMethod(
-              Action.subscribe.name,
-              {
-                "requestId": requestId,
-                "methodName": methodName,
-                "methodType": MethodType.observable.name,
-                "arguments": arguments,
-              },
-            )
-            .asStream()
-            .doOnListen(() {
-              print("LISTENING TO COMMAND STREAM");
-            })
-            .doOnDone(() {
-              print("DONE COMMAND STREAM");
-            });
-      },
-    );
     return resultStream.doOnListen(() {
       _channel.invokeMethod(
         Action.subscribe.name,
