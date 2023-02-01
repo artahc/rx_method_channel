@@ -82,8 +82,8 @@ public class RxMethodChannel {
                         result(
                             FlutterError(
                                 code: OPERATION_ERROR,
-                                message: nil,
-                                details: error
+                                message: error.localizedDescription,
+                                details: nil
                             )
                         )
                         self.removeSubscription(requestId: requestId)
@@ -104,15 +104,14 @@ public class RxMethodChannel {
                 let source = registeredCompletable[methodName]!
                 subscriptions[requestId] = source(arguments)
                     .subscribe(onCompleted: {
-                        print("EMITTING NIL")
                         result(nil)
                         self.removeSubscription(requestId: requestId)
                     },onError: { (error: Error) in
                         result(
                             FlutterError(
                                 code: OPERATION_ERROR,
-                                message: nil,
-                                details: error
+                                message: error.localizedDescription,
+                                details: nil
                             )
                         )
                         self.removeSubscription(requestId: requestId)
@@ -135,26 +134,13 @@ public class RxMethodChannel {
                     .observe(on: MainScheduler.instance)
                     .do(
                         onCompleted: {
-                            let payload = ObservableCallback(
-                                requestId: requestId,
-                                type: ObservableCallbackType.onComplete,
-                                value: nil
-                            )
-                            
-                            do {
-                                self.channel.invokeMethod(
-                                    "observableCallback",
-                                    arguments: try payload.toJson()
-                                )
-                            } catch {
-                                print(error.localizedDescription)
-                            }
+                            result(nil)
+                            self.removeSubscription(requestId: requestId)
                         }
                     )
                     .subscribe { (data: Any) in
                         let payload = ObservableCallback(
                             requestId: requestId,
-                            type: ObservableCallbackType.onNext,
                             value: data
                         )
                         
@@ -167,20 +153,14 @@ public class RxMethodChannel {
                             print(error.localizedDescription)
                         }
                     } onError: { (error: Error) in
-                        let payload = ObservableCallback(
-                            requestId: requestId,
-                            type: ObservableCallbackType.onError,
-                            value: nil
-                        )
-                        
-                        do {
-                            self.channel.invokeMethod(
-                                "observableCallback",
-                                arguments: try payload.toJson()
+                        result(
+                            FlutterError(
+                                code: OPERATION_ERROR,
+                                message: error.localizedDescription,
+                                details: nil
                             )
-                        } catch {
-                            print(error.localizedDescription)
-                        }
+                        )
+                        self.removeSubscription(requestId: requestId)
                     }
                 break
             default:

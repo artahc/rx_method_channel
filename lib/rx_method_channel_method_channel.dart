@@ -105,29 +105,31 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
     Map<String, dynamic> arguments = const {},
   }) {
     final requestId = _generateRequestId();
-
-    final resultTransformer =
-        StreamTransformer<ObservableCallback, Object?>.fromHandlers(
-      handleData: (data, sink) {
-        switch (data.type) {
-          case ObservableCallbackType.onNext:
-            sink.add(data.value);
-            break;
-          case ObservableCallbackType.onError:
-            //TODO: Map Error From Native
-            sink.addError(Exception("TODO ERROR"));
-            break;
-          case ObservableCallbackType.onComplete:
-            sink.close();
-            break;
-        }
-      },
-    );
-
     final resultStream = _observableCallbackController.stream
         .where((data) => data.requestId == requestId)
-        .transform(resultTransformer);
+        .map((event) => event.value);
 
+    final commandStream = LazyStream(
+      () {
+        return _channel
+            .invokeMethod(
+              Action.subscribe.name,
+              {
+                "requestId": requestId,
+                "methodName": methodName,
+                "methodType": MethodType.observable.name,
+                "arguments": arguments,
+              },
+            )
+            .asStream()
+            .doOnListen(() {
+              print("LISTENING TO COMMAND STREAM");
+            })
+            .doOnDone(() {
+              print("DONE COMMAND STREAM");
+            });
+      },
+    );
     return resultStream.doOnListen(() {
       _channel.invokeMethod(
         Action.subscribe.name,
@@ -138,9 +140,8 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
           "arguments": arguments,
         },
       );
-    }).doOnCancel(() async {
-      _cancelOperation(requestId);
     });
+    // return MergeStream([resultStream, commandStream]);
   }
 
   @override

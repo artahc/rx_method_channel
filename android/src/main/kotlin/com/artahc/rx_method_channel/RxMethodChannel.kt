@@ -131,10 +131,8 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
                                 removeSubscription(requestId)
                             }
                             .subscribe({
-                                logger.log(Level.INFO, "Success: $methodName")
                                 result.success(null)
                             }, { error ->
-                                logger.log(Level.INFO, "Error: $methodName")
                                 result.error(OPERATION_ERROR, error.localizedMessage, error)
                             })
                     }
@@ -151,37 +149,18 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
                         val source = registeredObservable[methodName]
                         subscriptions[requestId] = source!!.invoke(methodArgument)
                             .observeOn(AndroidSchedulers.mainThread())
-                            .doOnTerminate {
-                                result.success(null)
-                            }
                             .doOnComplete {
-                                channel.invokeMethod(
-                                    "observableCallback",
-                                    ObservableCallback(
-                                        requestId,
-                                        ObservableCallbackType.OnComplete,
-                                        null
-                                    ).toJson()
-                                )
+                                result.success(null)
+                                removeSubscription(requestId)
                             }
                             .subscribe({
                                 channel.invokeMethod(
                                     "observableCallback",
-                                    ObservableCallback(
-                                        requestId,
-                                        ObservableCallbackType.OnNext,
-                                        it
-                                    ).toJson()
+                                    ObservableCallback(requestId, it).toJson()
                                 )
-                            }, {
-                                channel.invokeMethod(
-                                    "observableCallback",
-                                    ObservableCallback(
-                                        requestId,
-                                        ObservableCallbackType.OnError,
-                                        null
-                                    ).toJson()
-                                )
+                            }, { error ->
+                                result.error(OPERATION_ERROR, error.localizedMessage, null)
+                                removeSubscription(requestId)
                             })
                     }
                     null -> result.error(

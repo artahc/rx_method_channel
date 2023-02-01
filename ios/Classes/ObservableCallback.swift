@@ -7,21 +7,13 @@
 
 import Foundation
 
-public enum ObservableCallbackType: String {
-    case onNext = "onNext"
-    case onComplete = "onComplete"
-    case onError = "onError"
-}
-
 public struct ObservableCallback {
     let requestId: Int
-    let type: ObservableCallbackType
     let value: Any?
     
     func toJson() throws -> String {
         let dict = [
             "requestId": requestId,
-            "type": type.rawValue,
             "value": value
         ];
         
@@ -34,6 +26,6 @@ public struct ObservableCallback {
     }
 }
 
-enum ObservableCallbackError:Error {
+enum ObservableCallbackError: Error {
     case parsingError
 }

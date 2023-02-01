@@ -1,19 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-enum ObservableCallbackType {
-  onNext,
-  onError,
-  onComplete;
-}
-
 class ObservableCallback extends Equatable {
   final int requestId;
-  final ObservableCallbackType type;
   final dynamic value;
 
   const ObservableCallback({
     required this.requestId,
-    required this.type,
     this.value,
   });
 
@@ -23,7 +15,6 @@ class ObservableCallback extends Equatable {
     try {
       instance = ObservableCallback(
         requestId: json["requestId"] as int,
-        type: ObservableCallbackType.values.byName(json["type"] as String),
         value: json["value"],
       );
     } catch (e) {
@@ -35,5 +26,5 @@ class ObservableCallback extends Equatable {
   }
 
   @override
-  List<Object?> get props => [requestId, type, value];
+  List<Object?> get props => [requestId, value];
 }
