@@ -75,8 +75,6 @@ public class RxMethodChannel {
                 
                 let source = registeredSingle[methodName]!
                 subscriptions[requestId] = source(arguments)
-                    .subscribe(on: MainScheduler.instance)
-                    .observe(on: MainScheduler.instance)
                     .subscribe { (data: Any) in
                         result(data)
                         self.removeSubscription(requestId: requestId)
@@ -105,9 +103,8 @@ public class RxMethodChannel {
                 
                 let source = registeredCompletable[methodName]!
                 subscriptions[requestId] = source(arguments)
-                    .subscribe(on: MainScheduler.instance)
-                    .observe(on: MainScheduler.instance)
                     .subscribe(onCompleted: {
+                        print("EMITTING NIL")
                         result(nil)
                         self.removeSubscription(requestId: requestId)
                     },onError: { (error: Error) in
@@ -135,8 +132,6 @@ public class RxMethodChannel {
                 
                 let source = registeredObservable[methodName]!
                 subscriptions[requestId] = source(arguments)
-                    .subscribe(on: MainScheduler.instance)
-                    .observe(on: MainScheduler.instance)
                     .do(
                         onCompleted: {
                             let payload = ObservableCallback(
@@ -170,7 +165,6 @@ public class RxMethodChannel {
                         } catch {
                             print(error.localizedDescription)
                         }
-                        
                     } onError: { (error: Error) in
                         let payload = ObservableCallback(
                             requestId: requestId,
@@ -178,10 +172,14 @@ public class RxMethodChannel {
                             value: nil
                         )
                         
-                        self.channel.invokeMethod(
-                            "observableCallback",
-                            arguments: try? payload.toJson()
-                        )
+                        do {
+                            self.channel.invokeMethod(
+                                "observableCallback",
+                                arguments: try payload.toJson()
+                            )
+                        } catch {
+                            print(error.localizedDescription)
+                        }
                     }
                 break
             default:
