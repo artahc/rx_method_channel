@@ -36,7 +36,15 @@ import Flutter
             return Observable<Int>.interval(.seconds(2), scheduler: MainScheduler.instance).map { $0 }
         }
         
+        channel.registerObservable("observableerror") { (args: Argument) in
+            return Observable.concat([Observable.just(1), Observable.just(2), Observable.error(TestError.testError)])
+        }
+        
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
+}
+
+enum TestError: Error {
+    case testError
 }

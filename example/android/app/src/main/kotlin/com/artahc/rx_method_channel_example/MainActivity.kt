@@ -41,5 +41,13 @@ class MainActivity : FlutterActivity() {
         channel.registerObservable<Int>("periodicObservable") { args ->
             Observable.interval(2L, TimeUnit.SECONDS).map { it.toInt() }
         }
+
+        channel.registerObservable<Int>("observableerror") { args ->
+           Observable.concatArray(
+               Observable.just(1),
+               Observable.just(2),
+               Observable.error(Exception("Test Error")),
+           )
+        }
     }
 }

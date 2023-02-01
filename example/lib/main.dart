@@ -42,20 +42,19 @@ class _MyAppState extends State<MyApp> {
       arguments: {
         "multiplier": 5,
       },
-    ).listen((event) {
-      print("Received result in Front: $event");
-    }, onError: (e, st) {
-      print(e);
-    });
+    ).listen(
+      (event) => print("Received result in Front: $event"),
+      onError: (e, st) => print("Error $e, $st"),
+      onDone: () => print("Stream done"),
+    );
   }
 
   void executePeriodicObservable() async {
     subs2 = plugin.executeObservable(methodName: "periodicObservable").listen(
-        (event) {
-      print("Received periodic: $event");
-    }, onError: (e, st) {
-      print(e);
-    });
+          (event) => print("Received periodic: $event"),
+          onError: (e, st) => print("Error: $e, $st"),
+          onDone: () => print("Stream done"),
+        );
   }
 
   void disposePeriodicObservable() {
@@ -72,6 +71,14 @@ class _MyAppState extends State<MyApp> {
         .whenComplete(() {
           print("Completed");
         });
+  }
+
+  Future<void> executeErrorObservable() async {
+    plugin.executeObservable(methodName: "observableerror").listen(
+          (event) => print("Receive data $event"),
+          onError: (e, st) => print("Error $e, $st"),
+          onDone: () => print("Done"),
+        );
   }
 
   @override
@@ -138,6 +145,18 @@ class _MyAppState extends State<MyApp> {
               },
               child: const Text(
                 "Dispose Periodic Observable",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            MaterialButton(
+              color: Colors.blue,
+              onPressed: () {
+                executeErrorObservable();
+              },
+              child: const Text(
+                "Execute observable error",
                 style: TextStyle(
                   color: Colors.white,
                 ),
