@@ -120,7 +120,6 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
         },
       );
     });
-    // return MergeStream([resultStream, commandStream]);
   }
 
   @override
