@@ -21,6 +21,7 @@ import Flutter
         channel.registerCompletable("completable") { (args: Argument) in
             return Completable.create { (observer : @escaping Completable.CompletableObserver) in
                 print("Print something")
+                observer(.completed)
                 return Disposables.create {}
             }
         }
