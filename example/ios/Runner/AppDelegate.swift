@@ -40,6 +40,13 @@ import Flutter
             return Observable.concat([Observable.just(1), Observable.just(2), Observable.error(TestError.testError)])
         }
         
+        channel.registerObservable("throwingobservable") { (args: Argument) in
+            return Observable.create { (observer: AnyObserver) in
+                observer.onError(TestError.testError)
+                return Disposables.create{}
+            }
+        }
+        
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }

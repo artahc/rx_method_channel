@@ -81,6 +81,13 @@ class _MyAppState extends State<MyApp> {
         );
   }
 
+  Future<void> executeThrowingObservable() async {
+    plugin.executeObservable(methodName: "throwingobservable").listen(
+        (event) => print("value $event"),
+        onDone: () => print("Done"),
+        onError: (e, st) => print("Error $e, $st"));
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -89,6 +96,8 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             MaterialButton(
               color: Colors.blue,
@@ -157,6 +166,18 @@ class _MyAppState extends State<MyApp> {
               },
               child: const Text(
                 "Execute observable error",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            MaterialButton(
+              color: Colors.blue,
+              onPressed: () {
+                executeThrowingObservable();
+              },
+              child: const Text(
+                "Execute throwing observable",
                 style: TextStyle(
                   color: Colors.white,
                 ),

@@ -49,5 +49,11 @@ class MainActivity : FlutterActivity() {
                Observable.error(Exception("Test Error")),
            )
         }
+
+        channel.registerObservable<Int>("throwingobservable") { args ->
+            Observable.create { emitter ->
+                throw Exception("Throwing observable")
+            }
+        }
     }
 }
