@@ -1,0 +1,41 @@
+PODS:
+  - FlutterMacOS (1.0.0)
+  - rx_method_channel (0.0.1):
+    - FlutterMacOS
+    - RxCocoa
+    - RxSwift (~> 5.1)
+  - RxCocoa (5.1.3):
+    - RxRelay (~> 5)
+    - RxSwift (~> 5)
+  - RxRelay (5.1.3):
+    - RxSwift (~> 5)
+  - RxSwift (5.1.0)
+
+DEPENDENCIES:
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - rx_method_channel (from `Flutter/ephemeral/.symlinks/plugins/rx_method_channel/macos`)
+  - RxCocoa
+  - RxSwift (= 5.1)
+
+SPEC REPOS:
+  trunk:
+    - RxCocoa
+    - RxRelay
+    - RxSwift
+
+EXTERNAL SOURCES:
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  rx_method_channel:
+    :path: Flutter/ephemeral/.symlinks/plugins/rx_method_channel/macos
+
+SPEC CHECKSUMS:
+  FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811
+  rx_method_channel: 311e8418e7f2b68ff0b37bc6b946125703a940c6
+  RxCocoa: e2ed092d5432e4296aa818021d27de4090ac0354
+  RxRelay: 5a18c2eb2d68326ebaf0112f80d837ae41b92b97
+  RxSwift: ad5874f24bb0dbffd1e9bb8443604e3578796c7a
+
+PODFILE CHECKSUM: ae1b279a55f6d090e24dbce14c5c90ad835675aa
+
+COCOAPODS: 1.11.3
