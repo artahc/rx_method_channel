@@ -109,17 +109,27 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
         .where((data) => data.requestId == requestId)
         .map((event) => event.value);
 
-    return resultStream.doOnListen(() {
-      _channel.invokeMethod(
-        Action.subscribe.name,
-        {
-          "requestId": requestId,
-          "methodName": methodName,
-          "methodType": MethodType.observable.name,
-          "arguments": arguments,
-        },
-      );
-    });
+    final commandStream = _channel
+        .invokeMethod(
+          Action.subscribe.name,
+          {
+            "requestId": requestId,
+            "methodName": methodName,
+            "methodType": MethodType.observable.name,
+            "arguments": arguments,
+          },
+        )
+        .asStream()
+        .transform(StreamTransformer.fromHandlers(
+          handleData: (data, sink) => sink.close(),
+          handleError: (error, stackTrace, sink) {
+            sink.addError(error, stackTrace);
+            sink.close();
+          },
+          handleDone: (sink) => sink.close(),
+        ));
+
+    return resultStream.mergeWith([commandStream]);
   }
 
   @override
