@@ -129,7 +129,9 @@ class RxMethodChannelPlatformImpl extends RxMethodChannelPlatform {
           handleDone: (sink) => sink.close(),
         ));
 
-    return resultStream.mergeWith([commandStream]);
+    return resultStream.mergeWith([commandStream]).doOnCancel(() {
+      _cancelOperation(requestId);
+    });
   }
 
   @override
