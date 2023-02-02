@@ -78,7 +78,7 @@ public class RxMethodChannel {
                     .subscribe { (data: Any) in
                         result(data)
                         self.removeSubscription(requestId: requestId)
-                    } onFailure:{ (error:Error) in
+                    } onError: { (error: Error) in
                         result(
                             FlutterError(
                                 code: OPERATION_ERROR,
@@ -131,7 +131,7 @@ public class RxMethodChannel {
                 
                 let source = registeredObservable[methodName]!
                 subscriptions[requestId] = source(arguments)
-                    .observe(on: MainScheduler.instance)
+                    .observeOn(MainScheduler.instance)
                     .do(
                         onCompleted: {
                             result(nil)

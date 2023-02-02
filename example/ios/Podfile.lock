@@ -3,19 +3,19 @@ PODS:
   - rx_method_channel (0.0.1):
     - Flutter
     - RxCocoa
-    - RxSwift
-  - RxCocoa (6.5.0):
-    - RxRelay (= 6.5.0)
-    - RxSwift (= 6.5.0)
-  - RxRelay (6.5.0):
-    - RxSwift (= 6.5.0)
-  - RxSwift (6.5.0)
+    - RxSwift (~> 5.1)
+  - RxCocoa (5.1.3):
+    - RxRelay (~> 5)
+    - RxSwift (~> 5)
+  - RxRelay (5.1.3):
+    - RxSwift (~> 5)
+  - RxSwift (5.1.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - rx_method_channel (from `.symlinks/plugins/rx_method_channel/ios`)
-  - RxCocoa (= 6.5.0)
-  - RxSwift (= 6.5.0)
+  - RxCocoa
+  - RxSwift (= 5.1)
 
 SPEC REPOS:
   trunk:
@@ -31,11 +31,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  rx_method_channel: b7ed365fb3e5350a933359de0f7607f6df641d00
-  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
-  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
-  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
+  rx_method_channel: 87081ab16137e98fe48a1a3f6cdeba0e71109cc2
+  RxCocoa: e2ed092d5432e4296aa818021d27de4090ac0354
+  RxRelay: 5a18c2eb2d68326ebaf0112f80d837ae41b92b97
+  RxSwift: ad5874f24bb0dbffd1e9bb8443604e3578796c7a
 
-PODFILE CHECKSUM: d6313b8e870a1afb25bcc11157659642382b72e1
+PODFILE CHECKSUM: b4475f1fc7ea0205e945148b33620317c4911a8e
 
 COCOAPODS: 1.11.3

@@ -31,8 +31,8 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
   
-  pod 'RxSwift', '6.5.0'
-  pod 'RxCocoa', '6.5.0'
+  pod 'RxSwift', '5.1'
+  pod 'RxCocoa'
   
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
