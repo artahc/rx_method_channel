@@ -1,15 +1,44 @@
 # rx_method_channel
 
-A new Flutter plugin project.
+Reactive (Rx) wrapper for method channel in Flutter.
 
-## Getting Started
+## How to Use?
+- Add this dependency to pubspec.yaml
+- Make method channel using `RxMethodChannel`
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+```
+import 'package:rx_method_channel/rx_method_channel.dart';
 
-For help getting started with Flutter development, view the
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+void main() async {
+  final channel = RxMethodChannel(channelName: "channelName");
 
+  // Observable
+  final observableSubsciption = channel.executeObservable(
+    methodName: "methodName",
+    arguments: {},
+  ).listen((event) { 
+
+  });
+  observableSubsciption.cancel();
+
+  // Completable
+  final completableOperation =
+      channel.executeCompletable(methodName: "methodName");
+  await completableOperation.valueOrCancellation().whenComplete(() {
+    print("Completed");
+  });
+
+
+  // Single
+  final singleOperation = channel.executeSingle(
+    methodName: "methodName",
+    arguments: {
+      "arg": "someArg",
+    },
+  );
+
+  final value = await singleOperation.valueOrCancellation();
+  print(value);
+}
+
+```
