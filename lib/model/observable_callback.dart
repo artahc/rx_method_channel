@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-class ObservableCallback extends Equatable {
+class ObservableCallback {
   final int requestId;
   final dynamic value;
 
@@ -26,5 +24,12 @@ class ObservableCallback extends Equatable {
   }
 
   @override
-  List<Object?> get props => [requestId, value];
+  bool operator ==(other) {
+    return (other is ObservableCallback) &&
+        requestId == other.requestId &&
+        identical(other, this);
+  }
+
+  @override
+  int get hashCode => Object.hashAll([requestId, value]);
 }

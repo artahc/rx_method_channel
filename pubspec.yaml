@@ -1,5 +1,5 @@
 name: rx_method_channel
-description: A new Flutter plugin project.
+description: Reactive (Rx) wrapper for method channel.
 version: 0.0.1
 homepage:
 
@@ -13,7 +13,6 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   async: ^2.9.0
   rxdart: ^0.27.7
-  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:
