@@ -12,39 +12,26 @@ import Flutter
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         let channel = RxMethodChannel(channelName: "test_channel", binaryMessenger: controller.binaryMessenger)
         
-        channel.registerSingle("returnmyint") { (args: Argument) in
-            let value = args["myInt"] as! Int
-            
-            return Single.just(value)
+        channel.registerSingle("mySingle") { (args: Argument) in
+            return Single.just(100)
         }
         
-        channel.registerCompletable("completable") { (args: Argument) in
+        channel.registerCompletable("myCompletable") { (args: Argument) in
             return Completable.create { (observer : @escaping Completable.CompletableObserver) in
-                print("Print something")
+                print("myCompletable completed.")
                 observer(.completed)
                 return Disposables.create {}
             }
         }
         
-        channel.registerObservable("observableint") { (args: Argument) in
-            let multiplier = args["multiplier"] as! Int
-            return Observable<Int>.concat([Observable.just(1), Observable.just(2), Observable.just(3)])
-                .map { $0 * multiplier }
-        }
-        
-        channel.registerObservable("periodicObservable") { (args: Argument) in
-            return Observable<Int>.interval(.seconds(2), scheduler: MainScheduler.instance).map { $0 }
-        }
-        
-        channel.registerObservable("observableerror") { (args: Argument) in
-            return Observable.concat([Observable.just(1), Observable.just(2), Observable.error(TestError.testError)])
-        }
-        
-        channel.registerObservable("throwingobservable") { (args: Argument) in
-            return Observable.create { (observer: AnyObserver) in
-                observer.onError(TestError.testError)
-                return Disposables.create{}
-            }
+        channel.registerObservable("myObservable") { (args: Argument) in
+            return Observable.concat([
+                Observable.just(1),
+                Observable.just(2),
+                Observable.just(3),
+                Observable.just(4),
+                Observable.just(5)
+            ])
         }
         
         GeneratedPluginRegistrant.register(with: self)

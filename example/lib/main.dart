@@ -15,76 +15,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final plugin = RxMethodChannel(channelName: "test_channel");
+  final channel = RxMethodChannel(channelName: "test_channel");
+
   StreamSubscription? subs;
-  StreamSubscription? subs2;
 
   @override
   void initState() {
     super.initState();
-  }
-
-  Future<void> executeSingle() async {
-    final value = await plugin.executeSingle(
-      methodName: "returnmyint",
-      arguments: {
-        "myInt": 69,
-      },
-    ).valueOrCancellation(null);
-
-    print(value);
-  }
-
-  Future<void> executeObservable() async {
-    subs = plugin.executeObservable(
-      methodName: "observableint",
-      arguments: {
-        "multiplier": 5,
-      },
-    ).listen(
-      (event) => print("Received result in Front: $event"),
-      onError: (e, st) => print("Error $e, $st"),
-      onDone: () => print("Stream done"),
-    );
-  }
-
-  void executePeriodicObservable() async {
-    subs2 = plugin.executeObservable(methodName: "periodicObservable").listen(
-          (event) => print("Received periodic: $event"),
-          onError: (e, st) => print("Error: $e, $st"),
-          onDone: () => print("Stream done"),
-        );
-  }
-
-  void disposePeriodicObservable() {
-    subs2?.cancel();
-  }
-
-  Future<void> executeCompletable() async {
-    await plugin
-        .executeCompletable(
-          methodName: "completable",
-          arguments: {},
-        )
-        .valueOrCancellation(null)
-        .whenComplete(() {
-          print("Completed");
-        });
-  }
-
-  Future<void> executeErrorObservable() async {
-    plugin.executeObservable(methodName: "observableerror").listen(
-          (event) => print("Receive data $event"),
-          onError: (e, st) => print("Error $e, $st"),
-          onDone: () => print("Done"),
-        );
-  }
-
-  Future<void> executeThrowingObservable() async {
-    plugin.executeObservable(methodName: "throwingobservable").listen(
-        (event) => print("value $event"),
-        onDone: () => print("Done"),
-        onError: (e, st) => print("Error $e, $st"));
   }
 
   @override
@@ -99,87 +36,38 @@ class _MyAppState extends State<MyApp> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             MaterialButton(
-              color: Colors.blue,
-              onPressed: () {
-                executeSingle();
+              onPressed: () async {
+                final value =
+                    await channel.executeSingle(methodName: "mySingle").value;
+                print(value);
               },
-              child: const Text(
-                "Execute Single",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+              child: const Center(
+                child: Text("Execute Single"),
               ),
             ),
             MaterialButton(
-              color: Colors.blue,
-              onPressed: () {
-                executeCompletable();
+              onPressed: () async {
+                await channel
+                    .executeCompletable(methodName: "myCompletable")
+                    .value
+                    .whenComplete(() => print("Completed"));
               },
-              child: const Text(
-                "Execute Completable",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+              child: const Center(
+                child: Text("Execute Completable"),
               ),
             ),
             MaterialButton(
-              color: Colors.blue,
               onPressed: () {
-                executeObservable();
+                subs?.cancel();
+                subs = channel
+                    .executeObservable(methodName: "myObservable")
+                    .timeout(const Duration(seconds: 5))
+                    .listen((event) {
+                  print(event);
+                });
               },
-              child: const Text(
-                "Execute Observable",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            MaterialButton(
-              color: Colors.blue,
-              onPressed: () {
-                executePeriodicObservable();
-              },
-              child: const Text(
-                "Execute Periodic Observable",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            MaterialButton(
-              color: Colors.blue,
-              onPressed: () {
-                disposePeriodicObservable();
-              },
-              child: const Text(
-                "Dispose Periodic Observable",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            MaterialButton(
-              color: Colors.blue,
-              onPressed: () {
-                executeErrorObservable();
-              },
-              child: const Text(
-                "Execute observable error",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            MaterialButton(
-              color: Colors.blue,
-              onPressed: () {
-                executeThrowingObservable();
-              },
-              child: const Text(
-                "Execute throwing observable",
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+              child: const Center(
+                child: Text("Execute Observable"),
               ),
             ),
           ],

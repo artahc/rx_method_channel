@@ -21,39 +21,18 @@ class MainActivity : FlutterActivity() {
         logger.log(Level.CONFIG, "Initializing MainActivity")
 
         channel = RxMethodChannel("test_channel", this.flutterEngine!!.dartExecutor.binaryMessenger)
-        channel.registerSingle<Int>("returnmyint") { args ->
-            val myInt = args["myInt"] as Int
-            Completable.timer(2, TimeUnit.SECONDS).andThen(
-                Single.just(myInt)
-            )
+        channel.registerSingle<Int>("mySingle") {
+            Single.just(100)
         }
-        channel.registerCompletable("completable") { args ->
+
+        channel.registerCompletable("myCompletable") {
             Completable.fromCallable {
-                logger.log(Level.INFO, "Print something")
+                logger.log(Level.INFO, "myCompletable completed.")
             }
         }
 
-        channel.registerObservable<Int>("observableint") { args ->
-            val multiplier = args["multiplier"] as Int
-            Observable.fromArray(1, 2, 3).map { it * multiplier }
-        }
-
-        channel.registerObservable<Int>("periodicObservable") { args ->
-            Observable.interval(2L, TimeUnit.SECONDS).map { it.toInt() }
-        }
-
-        channel.registerObservable<Int>("observableerror") { args ->
-           Observable.concatArray(
-               Observable.just(1),
-               Observable.just(2),
-               Observable.error(Exception("Test Error")),
-           )
-        }
-
-        channel.registerObservable<Int>("throwingobservable") { args ->
-            Observable.create { emitter ->
-                throw Exception("Throwing observable")
-            }
+        channel.registerObservable<Int>("myObservable") {
+            Observable.just(1, 2, 3, 4, 5)
         }
     }
 }
