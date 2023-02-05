@@ -27,7 +27,7 @@ class ObservableCallback {
   bool operator ==(other) {
     return (other is ObservableCallback) &&
         requestId == other.requestId &&
-        identical(other, this);
+        identical(other.value, value);
   }
 
   @override
