@@ -53,7 +53,7 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
 
     private val subscriptions = mutableMapOf<Int, Disposable>()
 
-    fun <T> registerSingle(methodName: String, call: SingleContainer) {
+    fun registerSingle(methodName: String, call: SingleContainer) {
         logger.log(Level.INFO, "Registered single: $methodName")
         registeredSingle[methodName] = call
     }
@@ -63,7 +63,7 @@ class RxMethodChannel(channelName: String, binaryMessenger: BinaryMessenger) :
         registeredCompletable[methodName] = call
     }
 
-    fun <T> registerObservable(methodName: String, call: ObservableContainer) {
+    fun registerObservable(methodName: String, call: ObservableContainer) {
         logger.log(Level.INFO, "Registered observable $methodName")
         registeredObservable[methodName] = call
     }
