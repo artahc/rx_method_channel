@@ -2,6 +2,7 @@ import 'package:async/async.dart';
 import 'package:rx_method_channel/rx_method_channel_method_channel.dart';
 
 import 'rx_method_channel_platform_interface.dart';
+export 'package:async/async.dart';
 
 class RxMethodChannel {
   final String channelName;
