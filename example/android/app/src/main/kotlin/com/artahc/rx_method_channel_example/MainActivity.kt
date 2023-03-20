@@ -21,7 +21,7 @@ class MainActivity : FlutterActivity() {
         logger.log(Level.CONFIG, "Initializing MainActivity")
 
         channel = RxMethodChannel("test_channel", this.flutterEngine!!.dartExecutor.binaryMessenger)
-        channel.registerSingle<Int>("mySingle") {
+        channel.registerSingle("mySingle") {
             Single.just(100)
         }
 
@@ -31,7 +31,7 @@ class MainActivity : FlutterActivity() {
             }
         }
 
-        channel.registerObservable<Int>("myObservable") {
+        channel.registerObservable("myObservable") {
             Observable.just(1, 2, 3, 4, 5)
         }
     }
