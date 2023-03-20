@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class ObservableCallback {
   final int requestId;
   final dynamic value;
@@ -16,7 +18,7 @@ class ObservableCallback {
         value: json["value"],
       );
     } catch (e) {
-      print("Error when parsing ObservableCallback from JSON. $e");
+      debugPrint("Error when parsing ObservableCallback from JSON. $e");
       rethrow;
     }
 

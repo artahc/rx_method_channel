@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:rx_method_channel/rx_method_channel.dart';
 
 void main() async {
@@ -7,18 +8,15 @@ void main() async {
   final observableSubsciption = channel.executeObservable(
     methodName: "methodName",
     arguments: {},
-  ).listen((event) { 
-
-  });
+  ).listen((event) {});
   observableSubsciption.cancel();
 
   // Completable
   final completableOperation =
       channel.executeCompletable(methodName: "methodName");
   await completableOperation.valueOrCancellation().whenComplete(() {
-    print("Completed");
+    debugPrint("Completed");
   });
-
 
   // Single
   final singleOperation = channel.executeSingle(
@@ -29,5 +27,5 @@ void main() async {
   );
 
   final value = await singleOperation.valueOrCancellation();
-  print(value);
+  debugPrint(value);
 }

@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
               onPressed: () async {
                 final value =
                     await channel.executeSingle(methodName: "mySingle").value;
-                print(value);
+                debugPrint(value);
               },
               child: const Center(
                 child: Text("Execute Single"),
@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
                 await channel
                     .executeCompletable(methodName: "myCompletable")
                     .value
-                    .whenComplete(() => print("Completed"));
+                    .whenComplete(() => debugPrint("Completed"));
               },
               child: const Center(
                 child: Text("Execute Completable"),
@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
                     .executeObservable(methodName: "myObservable")
                     .timeout(const Duration(seconds: 5))
                     .listen((event) {
-                  print(event);
+                  debugPrint(event);
                 });
               },
               child: const Center(
