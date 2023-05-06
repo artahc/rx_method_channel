@@ -4,8 +4,8 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'rx_method_channel'
-  s.version          = '0.0.1'
-  s.summary          = 'A new Flutter plugin project.'
+  s.version          = '0.0.2'
+  s.summary          = 'Reactive (Rx) wrapper for method channel.'
   s.description      = <<-DESC
 A new Flutter plugin project.
                        DESC
@@ -17,7 +17,7 @@ A new Flutter plugin project.
   s.dependency 'Flutter'
   s.dependency 'RxSwift', '~> 5.1'
   s.dependency 'RxCocoa'
-  s.platform = :ios, '11.0'
+  s.platform = :ios, '13.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
